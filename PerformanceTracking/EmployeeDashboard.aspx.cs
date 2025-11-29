@@ -30,6 +30,8 @@ namespace PTMS
                 LoadStatistics();
                 LoadNotifications();
                 LoadRecentGoals();
+               
+
             }
         }
 

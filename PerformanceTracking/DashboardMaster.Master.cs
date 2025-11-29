@@ -102,6 +102,22 @@ namespace PTMS
                     return "Login.aspx";
             }
         }
+
+        protected void lnkLogout_Click(object sender, EventArgs e)
+        {
+            // Clear all session variables
+            Session.Clear();
+            Session.Abandon();
+            
+            // Clear authentication cookie if exists
+            if (Request.Cookies["ASP.NET_SessionId"] != null)
+            {
+                Response.Cookies["ASP.NET_SessionId"].Expires = DateTime.Now.AddDays(-1);
+            }
+            
+            // Redirect to login page
+            Response.Redirect("Login.aspx", true);
+        }
     }
 }
 

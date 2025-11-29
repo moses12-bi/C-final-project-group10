@@ -25,6 +25,7 @@ namespace PTMS
                 {
                     int goalId = Convert.ToInt32(Request.QueryString["edit"]);
                     LoadGoalForEdit(goalId);
+                    
                 }
             }
         }
