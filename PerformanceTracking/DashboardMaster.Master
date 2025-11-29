@@ -237,7 +237,7 @@
                             <li><a class="dropdown-item" href="Profile.aspx"><i class="fas fa-user"></i> Profile</a></li>
                             <li><a class="dropdown-item" href="ChangePassword.aspx"><i class="fas fa-key"></i> Change Password</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item logout-btn" href="Login.aspx"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                            <li><asp:LinkButton ID="lnkLogout" runat="server" CssClass="dropdown-item logout-btn" OnClick="lnkLogout_Click"><i class="fas fa-sign-out-alt"></i> Logout</asp:LinkButton></li>
                         </ul>
                     </div>
                 </div>
