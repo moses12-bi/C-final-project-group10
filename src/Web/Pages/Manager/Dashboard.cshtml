@@ -1,0 +1,69 @@
+@page
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser<Guid>> SignInManager
+@inject UserManager<IdentityUser<Guid>> UserManager
+
+@{
+    ViewData["Title"] = "Manager Dashboard";
+}
+
+<div class="container">
+    <h1>Manager Dashboard</h1>
+    <p>Welcome, @User.Identity?.Name!</p>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Projects Overview</h3>
+                </div>
+                <div class="card-body">
+                    <p>Total Projects: <span class="badge badge-primary">0</span></p>
+                    <p>Active Projects: <span class="badge badge-success">0</span></p>
+                    <p>Completed Projects: <span class="badge badge-info">0</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Team Performance</h3>
+                </div>
+                <div class="card-body">
+                    <p>Total Team Members: <span class="badge badge-primary">0</span></p>
+                    <p>Tasks Completed This Week: <span class="badge badge-success">0</span></p>
+                    <p>Average Task Completion Time: <span class="badge badge-info">0 days</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Recent Activity</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item">No recent activity</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="card-body">
+                    <a href="/Manager/CreateProject" class="btn btn-primary">Create New Project</a>
+                    <a href="/Manager/Projects" class="btn btn-secondary">View All Projects</a>
+                    <a href="/Manager/TeamMembers" class="btn btn-info">Manage Team</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
