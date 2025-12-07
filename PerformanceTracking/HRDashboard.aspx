@@ -5,11 +5,11 @@
         .stat-card {
             background: white;
             border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            padding: 15px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border-left: 4px solid;
-            height: 100%;
+            height: 85px;
         }
 
         .stat-card:hover {
@@ -61,13 +61,14 @@
 
         .section-card h5 {
             color: #333;
-            font-weight: 600;
+            font-weight: 60;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #f0f0f0;
         }
 
         .quick-action-btn {
+
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
