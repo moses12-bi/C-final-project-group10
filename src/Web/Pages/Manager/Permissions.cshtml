@@ -1,0 +1,270 @@
+@page
+@model Web.Pages.Manager.PermissionsModel
+@{
+    ViewData["Title"] = "User Permissions";
+}
+
+<div class="container-fluid">
+    <h1>User Permissions Management</h1>
+    
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>Manage User Access & Permissions</h2>
+                <div>
+                    <button class="btn btn-success" onclick="inviteUser()">
+                        <i class="fas fa-user-plus me-2"></i>Invite User
+                    </button>
+                    <button class="btn btn-primary" onclick="savePermissions()">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="min-width: 200px;">User</th>
+                            <th>View Projects</th>
+                            <th>Create Projects</th>
+                            <th>Edit Projects</th>
+                            <th>View Tasks</th>
+                            <th>Create Tasks</th>
+                            <th>Edit Tasks</th>
+                            <th>Assign Tasks</th>
+                            <th>View Team</th>
+                            <th>Invite Users</th>
+                            <th>Manage Permissions</th>
+                            <th>View Reports</th>
+                            <th>Manage Settings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model.UsersWithPermissions)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle me-2">
+                                            <i class="fas fa-user"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold">@user.Email</div>
+                                            <small class="text-muted">@(string.Join(", ", user.Roles))</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.ViewProjects) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'ViewProjects', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.CreateProjects) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'CreateProjects', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.EditProjects) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'EditProjects', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.ViewTasks) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'ViewTasks', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.CreateTasks) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'CreateTasks', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.EditTasks) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'EditTasks', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.AssignTasks) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'AssignTasks', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.ViewTeamMembers) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'ViewTeamMembers', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.InviteUsers) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'InviteUsers', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.ManagePermissions) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'ManagePermissions', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.ViewReports) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'ViewReports', this.checked)">
+                                </td>
+                                
+                                <td class="text-center">
+                                    <input type="checkbox" 
+                                           class="form-check-input" 
+                                           @(user.HasPermission(Permission.ManageSettings) ? "checked" : "")
+                                           onchange="togglePermission('@user.UserId', 'ManageSettings', this.checked)">
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Invite User Modal -->
+<div class="modal fade" id="inviteUserModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invite New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="inviteForm">
+                    <div class="mb-3">
+                        <label for="inviteEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="inviteEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="inviteRole" class="form-label">Initial Role</label>
+                        <select class="form-select" id="inviteRole">
+                            <option value="Employee">Employee</option>
+                            <option value="TeamLead">Team Lead</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Initial Permissions</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="ViewProjects" checked>
+                            <label class="form-check-label">View Projects</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="ViewTasks" checked>
+                            <label class="form-check-label">View Tasks</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value="EditOwnProfile" checked>
+                            <label class="form-check-label">Edit Own Profile</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="sendInvite()">Send Invitation</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let permissionChanges = {};
+        
+        function togglePermission(userId, permission, isChecked) {
+            const key = `${userId}-${permission}`;
+            permissionChanges[key] = isChecked;
+        }
+        
+        function savePermissions() {
+            fetch('/Manager/Permissions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    changes: permissionChanges
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Permissions saved successfully!');
+                    permissionChanges = {};
+                } else {
+                    alert('Error saving permissions: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error saving permissions');
+            });
+        }
+        
+        function inviteUser() {
+            const modal = new bootstrap.Modal(document.getElementById('inviteUserModal'));
+            modal.show();
+        }
+        
+        function sendInvite() {
+            const email = document.getElementById('inviteEmail').value;
+            const role = document.getElementById('inviteRole').value;
+            
+            fetch('/Manager/Permissions/Invite', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email,
+                    role: role
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Invitation sent successfully!');
+                    bootstrap.Modal.getInstance(document.getElementById('inviteUserModal')).hide();
+                    location.reload();
+                } else {
+                    alert('Error sending invitation: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error sending invitation');
+            });
+        }
+    </script>
+}
