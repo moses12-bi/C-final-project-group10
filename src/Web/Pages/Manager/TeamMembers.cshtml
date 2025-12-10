@@ -1,0 +1,71 @@
+@page
+@model Web.Pages.Manager.TeamMembersModel
+@{
+    ViewData["Title"] = "Team Members";
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>Team Members Management</h1>
+                <div>
+                    <a asp-page="CreateProject" class="btn btn-primary">Create New Project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>All Team Members</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Experience Level</th>
+                            <th>Current Workload</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.TeamMembers != null && Model.TeamMembers.Any())
+                        {
+                            @foreach (var member in Model.TeamMembers)
+                            {
+                                <tr>
+                                    <td>@member.FirstName @member.LastName</td>
+                                    <td>@member.Email</td>
+                                    <td>@member.Role</td>
+                                    <td>@member.ExperienceLevel</td>
+                                    <td>@member.CurrentWorkload%</td>
+                                    <td>
+                                        <span class="badge bg-@(member.IsActive ? "success" : "secondary")">
+                                            @(member.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary">Edit</button>
+                                        <button class="btn btn-sm btn-outline-info">View Details</button>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center">No team members found.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
