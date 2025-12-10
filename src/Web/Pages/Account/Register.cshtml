@@ -1,0 +1,47 @@
+@page
+@model Web.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Registration";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h4 class="mb-0"><i class="fas fa-lock me-2"></i>Invite-Only Registration</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <i class="fas fa-envelope-open-text fa-4x text-primary mb-3"></i>
+                    <h5>Registration by Invitation Only</h5>
+                    <p class="text-muted">
+                        This system uses an invite-based registration. You must have a valid invitation link to create an account.
+                    </p>
+                </div>
+                
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>How to Register</h6>
+                    <ol class="text-start mb-0">
+                        <li>Contact your system administrator</li>
+                        <li>Request an invitation to your email</li>
+                        <li>Click the invitation link in the email</li>
+                        <li>Complete your registration</li>
+                    </ol>
+                </div>
+                
+                <div class="d-grid gap-2">
+                    <a href="/Account/Login" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Go to Login
+                    </a>
+                    <a href="mailto:admin@yourcompany.com" class="btn btn-outline-secondary">
+                        <i class="fas fa-envelope me-2"></i>Request Invitation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
