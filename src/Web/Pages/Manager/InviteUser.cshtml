@@ -1,0 +1,246 @@
+@page
+@model Web.Pages.Manager.InviteUserModel
+@{
+    ViewData["Title"] = "Invite User";
+}
+
+<div class="container-fluid">
+    <h1>Invite New User</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Invitation.Email" class="form-label">Email Address</label>
+                                <input asp-for="Invitation.Email" class="form-control" required />
+                                <span asp-validation-for="Invitation.Email" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="Invitation.Department" class="form-label">Department</label>
+                                <select asp-for="Invitation.Department" class="form-select" required>
+                                    <option value="">Select Department</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="HR">Human Resources</option>
+                                    <option value="Finance">Finance</option>
+                                    <option value="Operations">Operations</option>
+                                </select>
+                                <span asp-validation-for="Invitation.Department" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label asp-for="Invitation.Role" class="form-label">Role</label>
+                                <select asp-for="Invitation.Role" class="form-select" required onchange="updateDefaultPermissions()">
+                                    <option value="">Select Role</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Supervisor">Supervisor</option>
+                                    <option value="User">User</option>
+                                </select>
+                                <span asp-validation-for="Invitation.Role" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Permissions Matrix</h5>
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Category</th>
+                                            <th>Permission</th>
+                                            <th class="text-center">Allow</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td rowspan="3">Users</td>
+                                            <td>View Users</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[ViewUsers]" value="true" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Edit Users</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[EditUsers]" value="true" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Disable Accounts</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[DisableAccounts]" value="true" />
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td rowspan="2">Projects</td>
+                                            <td>Create Projects</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[CreateProjects]" value="true" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Manage Projects</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[ManageProjects]" value="true" />
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td rowspan="2">Tasks</td>
+                                            <td>Assign Tasks</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[AssignTasks]" value="true" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>View All Tasks</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[ViewAllTasks]" value="true" />
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>Analytics</td>
+                                            <td>View Reports</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[ViewReports]" value="true" />
+                                            </td>
+                                        </tr>
+                                        
+                                        <tr>
+                                            <td>Settings</td>
+                                            <td>Manage Settings</td>
+                                            <td class="text-center">
+                                                <input type="checkbox" name="permissions[ManageSettings]" value="true" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>Send Invitation
+                            </button>
+                            <a href="/Manager/Permissions" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Permissions
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h6>Invitation Summary</h6>
+                </div>
+                <div class="card-body">
+                    <div id="invitationSummary">
+                        <p class="text-muted">Fill in the form to see invitation summary.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h6>Recent Invitations</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentInvitations.Any())
+                    {
+                        <div class="list-group list-group-flush">
+                            @foreach (var invitation in Model.RecentInvitations.Take(5))
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <div class="fw-bold">@invitation.Email</div>
+                                        <small class="text-muted">@invitation.Role - @invitation.Status</small>
+                                    </div>
+                                    <small class="text-muted">@invitation.CreatedAt.ToShortDateString()</small>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No recent invitations.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateDefaultPermissions() {
+            const role = document.querySelector('#Invitation_Role').value;
+            const checkboxes = document.querySelectorAll('input[name^="permissions"]');
+            
+            // Clear all checkboxes first
+            checkboxes.forEach(cb => cb.checked = false);
+            
+            // Set default permissions based on role
+            const rolePermissions = {
+                'Admin': ['ViewUsers', 'EditUsers', 'DisableAccounts', 'CreateProjects', 'ManageProjects', 'AssignTasks', 'ViewAllTasks', 'ViewReports', 'ManageSettings'],
+                'Supervisor': ['ViewUsers', 'CreateProjects', 'ManageProjects', 'AssignTasks', 'ViewAllTasks', 'ViewReports'],
+                'User': ['ViewAllTasks']
+            };
+            
+            if (rolePermissions[role]) {
+                rolePermissions[role].forEach(perm => {
+                    const checkbox = document.querySelector(`input[name="permissions[${perm}]"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            }
+            
+            updateSummary();
+        }
+        
+        function updateSummary() {
+            const email = document.querySelector('#Invitation_Email').value;
+            const department = document.querySelector('#Invitation_Department').value;
+            const role = document.querySelector('#Invitation_Role').value;
+            
+            if (!email || !department || !role) {
+                document.getElementById('invitationSummary').innerHTML = '<p class="text-muted">Fill in the form to see invitation summary.</p>';
+                return;
+            }
+            
+            const checkedPermissions = Array.from(document.querySelectorAll('input[name^="permissions"]:checked'))
+                .map(cb => cb.name.replace('permissions[', '').replace(']', ''));
+            
+            const summary = `
+                <div class="mb-3">
+                    <strong>To:</strong> ${email}<br>
+                    <strong>Department:</strong> ${department}<br>
+                    <strong>Role:</strong> ${role}<br>
+                    <strong>Permissions:</strong> ${checkedPermissions.length} granted
+                </div>
+                <div class="small">
+                    ${checkedPermissions.length > 0 ? 
+                        '<div class="text-muted">Permissions: ' + checkedPermissions.join(', ') + '</div>' : 
+                        '<div class="text-warning">No permissions selected</div>'
+                    }
+                </div>
+            `;
+            
+            document.getElementById('invitationSummary').innerHTML = summary;
+        }
+        
+        // Update summary when form changes
+        document.querySelectorAll('#Invitation_Email, #Invitation_Department, #Invitation_Role, input[name^="permissions"]').forEach(element => {
+            element.addEventListener('change', updateSummary);
+        });
+    </script>
+}
