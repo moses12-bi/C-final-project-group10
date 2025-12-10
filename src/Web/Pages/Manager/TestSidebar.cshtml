@@ -1,0 +1,25 @@
+@page
+@model Web.Pages.Manager.TestSidebarModel
+@{
+    ViewData["Title"] = "Test Sidebar";
+}
+
+<div class="container-fluid">
+    <h1>Test Sidebar Page</h1>
+    <p>This page should show the sidebar on the left.</p>
+    
+    <div class="alert alert-info">
+        <strong>Sidebar Test:</strong> If you can see a purple sidebar on the left with navigation menu, then the layout is working correctly.
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5>Quick Navigation Test</h5>
+            <p>Try clicking these links to test navigation:</p>
+            <div class="d-flex gap-2">
+                <a asp-page="Dashboard" class="btn btn-primary">Dashboard</a>
+                <a asp-page="TeamMembers" class="btn btn-success">Team Members</a>
+            </div>
+        </div>
+    </div>
+</div>
