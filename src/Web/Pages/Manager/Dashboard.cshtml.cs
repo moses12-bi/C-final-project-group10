@@ -1,9 +1,7 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Web.Pages.Manager;
 
-[Authorize(Roles = "Manager")]
 public class DashboardModel : PageModel
 {
     public void OnGet()
