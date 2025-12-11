@@ -19,13 +19,90 @@ namespace PTMS
             if (!IsPostBack)
             {
                 LoadGoals();
-                
-                // Check if editing
+
+                // Check if editing an existing goal via query string
                 if (Request.QueryString["edit"] != null)
                 {
                     int goalId = Convert.ToInt32(Request.QueryString["edit"]);
                     LoadGoalForEdit(goalId);
+
+                    // Ensure the edit modal is actually shown on initial load
+                    ScriptManager.RegisterStartupScript(this, GetType(), "openEditModal",
+                        "var modal = new bootstrap.Modal(document.getElementById('goalModal')); modal.show();", true);
+                }
+                // Check if the page was opened with an explicit create action (from EmployeeDashboard quick action)
+                else if (!string.IsNullOrEmpty(Request.QueryString["action"]) &&
+                         Request.QueryString["action"].Equals("create", StringComparison.OrdinalIgnoreCase))
+                {
+                    // Reuse the same logic as clicking the "Create New Goal" button
+                    btnOpenCreateModal_Click(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        protected void btnOpenCreateModal_Click(object sender, EventArgs e)
+        {
+            // Ensure we are in "create" mode, not "edit" mode
+            hdnGoalId.Value = string.Empty;
+            lblModalTitle.Text = "Create New Goal";
+            lblMessage.Visible = false;
+
+            // (Optional UX) clear fields when explicitly opening create modal
+            // This avoids re-using any previously edited data unintentionally
+            if (!IsPostBack)
+            {
+                txtTitle.Text = string.Empty;
+                txtDescription.Text = string.Empty;
+                txtProgress.Text = "0";
+            }
+
+            // Notify manager that employee is starting to create a goal
+            NotifyManagerGoalCreationStarted();
+            
+            // Open the modal using JavaScript
+            ScriptManager.RegisterStartupScript(this, GetType(), "openModal", 
+                "var modal = new bootstrap.Modal(document.getElementById('goalModal')); modal.show();", true);
+        }
+
+        private void NotifyManagerGoalCreationStarted()
+        {
+            string connString = ConfigurationManager.ConnectionStrings["PTMS_DB"].ConnectionString;
+            int employeeId = Convert.ToInt32(Session["UserID"]);
+            string employeeName = Session["FullName"] != null ? Session["FullName"].ToString() : "An employee";
+            
+            using (SqlConnection conn = new SqlConnection(connString))
+            {
+                conn.Open();
+                
+                // Get manager ID
+                string getManagerQuery = "SELECT manager_id FROM Users WHERE user_id = @uid";
+                SqlCommand getManagerCmd = new SqlCommand(getManagerQuery, conn);
+                getManagerCmd.Parameters.AddWithValue("@uid", employeeId);
+                object managerIdObj = getManagerCmd.ExecuteScalar();
+                
+                if (managerIdObj != null && managerIdObj != DBNull.Value)
+                {
+                    int managerId = Convert.ToInt32(managerIdObj);
                     
+                    // Check if notification already exists (to avoid duplicates if user clicks multiple times)
+                    string checkNotifQuery = @"SELECT COUNT(*) FROM Notifications 
+                                            WHERE user_id = @mid 
+                                            AND message LIKE @msgPattern 
+                                            AND created_at > DATEADD(minute, -5, GETDATE())";
+                    SqlCommand checkCmd = new SqlCommand(checkNotifQuery, conn);
+                    checkCmd.Parameters.AddWithValue("@mid", managerId);
+                    checkCmd.Parameters.AddWithValue("@msgPattern", $"%{employeeName}%started creating%");
+                    int existingCount = (int)checkCmd.ExecuteScalar();
+                    
+                    if (existingCount == 0)
+                    {
+                        string notificationQuery = @"INSERT INTO Notifications (user_id, message, status, created_at) 
+                                                    VALUES (@mid, @msg, 'unread', GETDATE())";
+                        SqlCommand notifCmd = new SqlCommand(notificationQuery, conn);
+                        notifCmd.Parameters.AddWithValue("@mid", managerId);
+                        notifCmd.Parameters.AddWithValue("@msg", $"{employeeName} has started creating a new goal. Please be ready to review it.");
+                        notifCmd.ExecuteNonQuery();
+                    }
                 }
             }
         }

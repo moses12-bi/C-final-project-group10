@@ -18,6 +18,25 @@ namespace PTMS
             if (!IsPostBack)
             {
                 LoadTeamMembers();
+                
+                // Check if requester ID is provided in query string (from notification)
+                if (Request.QueryString["requesterId"] != null)
+                {
+                    string requesterIdStr = Request.QueryString["requesterId"];
+                    if (int.TryParse(requesterIdStr, out int requesterId))
+                    {
+                        // Pre-select the requester in the dropdown
+                        if (ddlReceiver.Items.FindByValue(requesterIdStr) != null)
+                        {
+                            ddlReceiver.SelectedValue = requesterIdStr;
+                            
+                            // Show a message indicating this is a response to a feedback request
+                            lblMessage.Text = "You are responding to a feedback request. Please provide your feedback below.";
+                            lblMessage.CssClass = "alert alert-info";
+                            lblMessage.Visible = true;
+                        }
+                    }
+                }
             }
         }
 

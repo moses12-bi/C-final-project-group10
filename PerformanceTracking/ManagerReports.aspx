@@ -45,5 +45,51 @@
             </Columns>
         </asp:GridView>
     </div>
+
+    <!-- Organizational Goals Tracking Section -->
+    <div class="report-card">
+        <h5 class="mb-3"><i class="fas fa-building"></i> Team Organizational Goals Progress</h5>
+        <asp:Repeater ID="rptTeamOrgGoals" runat="server">
+            <ItemTemplate>
+                <div class="mb-4" style="border-bottom: 2px solid #e0e0e0; padding-bottom: 20px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <h6 class="mb-1"><%# Eval("title") %></h6>
+                            <p class="text-muted small mb-2"><%# Eval("description") %></p>
+                        </div>
+                        <span class="badge bg-primary">Org Goal</span>
+                    </div>
+                    
+                    <div class="row mb-2">
+                        <div class="col-md-3">
+                            <small class="text-muted">Team Members: <strong><%# Eval("team_count") %></strong></small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Completed: <strong class="text-success"><%# Eval("completed_count") %></strong></small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">In Progress: <strong class="text-info"><%# Eval("in_progress_count") %></strong></small>
+                        </div>
+                        <div class="col-md-3">
+                            <small class="text-muted">Avg Progress: <strong><%# Eval("avg_progress") %>%</strong></small>
+                        </div>
+                    </div>
+                    
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar bg-success" style="width: <%# Eval("avg_progress") %>%">
+                            <%# Eval("avg_progress") %>%
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <%# GetTeamMemberProgressHTML(Eval("title").ToString()) %>
+                    </div>
+                </div>
+            </ItemTemplate>
+        </asp:Repeater>
+        <asp:Label ID="lblNoOrgGoals" runat="server" Visible="false">
+            <p class="text-muted text-center py-3">No organizational goals assigned to your team yet.</p>
+        </asp:Label>
+    </div>
 </asp:Content>
 

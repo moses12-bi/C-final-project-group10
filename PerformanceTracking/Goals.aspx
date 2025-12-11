@@ -74,9 +74,9 @@
 
     <div class="page-header">
         <h3><i class="fas fa-bullseye"></i> My Goals</h3>
-        <button type="button" class="btn-create" data-bs-toggle="modal" data-bs-target="#goalModal">
+        <asp:LinkButton ID="btnOpenCreateModal" runat="server" CssClass="btn-create" OnClick="btnOpenCreateModal_Click">
             <i class="fas fa-plus"></i> Create New Goal
-        </button>
+        </asp:LinkButton>
     </div>
 
     <!-- Goals List -->
@@ -131,9 +131,9 @@
             <i class="fas fa-bullseye" style="font-size: 4rem; color: #ccc; margin-bottom: 20px;"></i>
             <h4 class="text-muted">No goals yet</h4>
             <p class="text-muted">Create your first goal to get started!</p>
-            <button type="button" class="btn-create mt-3" data-bs-toggle="modal" data-bs-target="#goalModal">
+            <asp:LinkButton ID="btnOpenCreateModal2" runat="server" CssClass="btn-create mt-3" OnClick="btnOpenCreateModal_Click">
                 <i class="fas fa-plus"></i> Create Goal
-            </button>
+            </asp:LinkButton>
         </div>
     </asp:Label>
 

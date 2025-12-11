@@ -66,9 +66,11 @@ namespace PTMS
 
                 case "hr":
                 case "admin":
+                    AddMenuItem("Give Feedback", "GiveFeedback.aspx", "fas fa-comment-alt", false);
                     AddMenuItem("Manage Users", "ManageUsers.aspx", "fas fa-user-cog", false);
                     AddMenuItem("Review Cycles", "ReviewCycles.aspx", "fas fa-calendar-alt", false);
                     AddMenuItem("Organization Goals", "OrgGoals.aspx", "fas fa-building", false);
+                    AddMenuItem("Track Org Goals", "TrackOrgGoals.aspx", "fas fa-chart-pie", false);
                     AddMenuItem("Analytics", "Analytics.aspx", "fas fa-chart-line", false);
                     AddMenuItem("All Reviews", "AllReviews.aspx", "fas fa-clipboard-list", false);
                     break;

@@ -64,9 +64,12 @@ namespace PTMS
 
             string message = txtMessage.Text.Trim();
             string senderName = Session["FullName"] != null ? Session["FullName"].ToString() : "Someone";
+            int senderId = Convert.ToInt32(Session["UserID"]);
             string requestMsg = $"{senderName} has requested 360-degree feedback from you.";
             if (!string.IsNullOrEmpty(message))
                 requestMsg += $" Message: {message}";
+            // Store requester ID in message for easy retrieval
+            requestMsg += $" [REQ_ID:{senderId}]";
 
             string connString = ConfigurationManager.ConnectionStrings["PTMS_DB"].ConnectionString;
 

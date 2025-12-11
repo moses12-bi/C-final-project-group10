@@ -40,6 +40,39 @@ namespace PTMS
                 DataTable dt = new DataTable();
                 da.Fill(dt);
 
+                // Add a column to store if it's a feedback request and requester ID
+                dt.Columns.Add("IsFeedbackRequest", typeof(bool));
+                dt.Columns.Add("RequesterId", typeof(int));
+                dt.Columns.Add("DisplayMessage", typeof(string));
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string message = row["message"].ToString();
+                    bool isFeedbackRequest = message.Contains("requested") && message.Contains("feedback");
+                    row["IsFeedbackRequest"] = isFeedbackRequest;
+                    
+                    // Extract requester ID from message if it's a feedback request
+                    int requesterId = 0;
+                    string displayMessage = message;
+                    if (isFeedbackRequest && message.Contains("[REQ_ID:"))
+                    {
+                        int startIndex = message.IndexOf("[REQ_ID:") + 8;
+                        int endIndex = message.IndexOf("]", startIndex);
+                        if (endIndex > startIndex)
+                        {
+                            string idStr = message.Substring(startIndex, endIndex - startIndex);
+                            if (int.TryParse(idStr, out requesterId))
+                            {
+                                row["RequesterId"] = requesterId;
+                                // Remove the ID marker from display message
+                                displayMessage = message.Replace($" [REQ_ID:{requesterId}]", "");
+                            }
+                        }
+                    }
+                    row["RequesterId"] = requesterId;
+                    row["DisplayMessage"] = displayMessage;
+                }
+
                 rptNotifications.DataSource = dt;
                 rptNotifications.DataBind();
                 lblNoNotifications.Visible = (dt.Rows.Count == 0);
@@ -88,6 +121,21 @@ namespace PTMS
             {
                 return "N/A";
             }
+        }
+
+        protected string GetFeedbackButton(object isFeedbackRequest, object requesterId)
+        {
+            if (isFeedbackRequest == null || requesterId == null)
+                return "";
+
+            bool isRequest = Convert.ToBoolean(isFeedbackRequest);
+            int reqId = Convert.ToInt32(requesterId);
+
+            if (isRequest && reqId > 0)
+            {
+                return $"<div class='mt-2'><a href='GiveFeedback.aspx?requesterId={reqId}' class='btn btn-sm btn-primary'><i class='fas fa-comment-alt'></i> Give Feedback</a></div>";
+            }
+            return "";
         }
     }
 }

@@ -204,6 +204,7 @@
     <Content Include="ManageUsers.aspx" />
     <Content Include="ReviewCycles.aspx" />
     <Content Include="OrgGoals.aspx" />
+    <Content Include="TrackOrgGoals.aspx" />
     <Content Include="AllReviews.aspx" />
     <Content Include="ChangePassword.aspx" />
     <Content Include="EditUser.aspx" />
@@ -390,6 +391,10 @@
     </Compile>
     <Compile Include="OrgGoals.aspx.cs">
       <DependentUpon>OrgGoals.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="TrackOrgGoals.aspx.cs">
+      <DependentUpon>TrackOrgGoals.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="AllReviews.aspx.cs">

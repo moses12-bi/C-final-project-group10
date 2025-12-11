@@ -32,12 +32,15 @@
             <div class="notification-item <%# Eval("status").ToString() == "unread" ? "unread" : "" %>">
                 <div class="d-flex justify-content-between align-items-start">
                     <div style="flex: 1;">
-                        <p class="mb-1"><%# Eval("message") %></p>
+                        <p class="mb-1"><%# Eval("DisplayMessage") %></p>
                         <small class="text-muted">
                             <i class="fas fa-clock"></i> <%# FormatDate(Eval("created_at")) %>
                         </small>
+                        <%# GetFeedbackButton(Eval("IsFeedbackRequest"), Eval("RequesterId")) %>
                     </div>
-                    <%# Eval("status").ToString() == "unread" ? "<span class='badge bg-primary'>New</span>" : "" %>
+                    <div class="d-flex flex-column align-items-end">
+                        <%# Eval("status").ToString() == "unread" ? "<span class='badge bg-primary mb-2'>New</span>" : "" %>
+                    </div>
                 </div>
             </div>
         </ItemTemplate>

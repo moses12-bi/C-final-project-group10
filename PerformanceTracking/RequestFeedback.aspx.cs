@@ -71,6 +71,9 @@ namespace PTMS
                 string notificationMsg = $"{senderName} has requested {feedbackType} feedback from you.";
                 if (!string.IsNullOrEmpty(message))
                     notificationMsg += $" Message: {message}";
+                
+                // Store requester ID in message for easy retrieval (format: [REQ_ID:123])
+                notificationMsg += $" [REQ_ID:{senderId}]";
 
                 string query = @"INSERT INTO Notifications (user_id, message, status, created_at) 
                                 VALUES (@uid, @msg, 'unread', GETDATE())";
