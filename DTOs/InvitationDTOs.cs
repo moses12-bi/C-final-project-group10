@@ -16,7 +16,7 @@ namespace ProjectM.DTOs
         public string Department { get; set; } = string.Empty;
 
         [Required]
-        public List<string> Permissions { get; set; } = new List<string>();
+        public Dictionary<string, bool> Permissions { get; set; } = new Dictionary<string, bool>();
     }
 
     public class InvitationResponse
@@ -25,7 +25,7 @@ namespace ProjectM.DTOs
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public string Department { get; set; } = string.Empty;
-        public List<string> Permissions { get; set; } = new List<string>();
+        public Dictionary<string, bool> Permissions { get; set; } = new Dictionary<string, bool>();
         public InvitationStatus Status { get; set; }
         public DateTime ExpiresAt { get; set; }
         public DateTime CreatedAt { get; set; }
@@ -35,7 +35,7 @@ namespace ProjectM.DTOs
     public class CompleteRegistrationRequest
     {
         [Required]
-        public string Token { get; set; } = string.Empty;
+        public Guid Token { get; set; }
 
         [Required]
         [MinLength(8)]
@@ -49,7 +49,7 @@ namespace ProjectM.DTOs
     {
         public string Token { get; set; } = string.Empty;
         public User User { get; set; } = null!;
-        public List<string> Permissions { get; set; } = new List<string>();
+        public Dictionary<string, bool> Permissions { get; set; } = new Dictionary<string, bool>();
     }
 
     public class UserResponse
@@ -61,6 +61,6 @@ namespace ProjectM.DTOs
         public string Department { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public DateTime CreatedAt { get; set; }
-        public List<string> Permissions { get; set; } = new List<string>();
+        public Dictionary<string, bool> Permissions { get; set; } = new Dictionary<string, bool>();
     }
 }

@@ -24,10 +24,10 @@ namespace ProjectM.Services
             _emailService = emailService;
         }
 
-        public async Task<Invitation> CreateInvitationAsync(string email, string role, string department, List<string> permissions, Guid invitedByUserId)
+        public async Task<Invitation> CreateInvitationAsync(string email, string role, string department, Dictionary<string, bool> permissions, Guid invitedByUserId)
         {
             // Validate inviter permissions
-            if (!await HasPermissionAsync(invitedByUserId, "InviteUsers"))
+            if (!await HasPermissionAsync(invitedByUserId, "invites.manage"))
             {
                 throw new UnauthorizedAccessException("User does not have permission to create invitations.");
             }
@@ -48,9 +48,6 @@ namespace ProjectM.Services
                 throw new InvalidOperationException("A pending invitation for this email already exists.");
             }
 
-            // Generate token
-            var token = Guid.NewGuid().ToString("N");
-
             // Serialize permissions to JSON
             var permissionsJson = JsonSerializer.Serialize(permissions);
 
@@ -58,7 +55,8 @@ namespace ProjectM.Services
             var invitation = new Invitation
             {
                 InvitationId = Guid.NewGuid(),
-                Token = token,
+                // Token field kept for backward compat if needed, but we use ID now 
+                Token = Guid.NewGuid().ToString("N"),
                 Email = email,
                 Role = role,
                 Department = department,
@@ -71,17 +69,17 @@ namespace ProjectM.Services
             _context.Invitations.Add(invitation);
             await _context.SaveChangesAsync();
 
-            // Send email (async, don't wait for completion)
-            _ = Task.Run(() => _emailService.SendInvitationEmailAsync(email, token));
+            // Send email using InvitationId as token
+            _ = Task.Run(() => _emailService.SendInvitationEmailAsync(email, invitation.InvitationId.ToString()));
 
             return invitation;
         }
 
-        public async Task<Invitation?> ValidateInvitationAsync(string token)
+        public async Task<Invitation?> ValidateInvitationAsync(Guid token)
         {
             var invitation = await _context.Invitations
                 .Include(i => i.InvitedByUser)
-                .FirstOrDefaultAsync(i => i.Token == token);
+                .FirstOrDefaultAsync(i => i.InvitationId == token);
 
             if (invitation == null)
             {
@@ -103,7 +101,7 @@ namespace ProjectM.Services
             return invitation;
         }
 
-        public async Task<User?> CompleteRegistrationAsync(string token, string password)
+        public async Task<User?> CompleteRegistrationAsync(Guid token, string password)
         {
             var invitation = await ValidateInvitationAsync(token);
             if (invitation == null)
@@ -126,7 +124,7 @@ namespace ProjectM.Services
             {
                 Id = Guid.NewGuid(),
                 Email = invitation.Email,
-                FullName = invitation.Email.Split('@')[0], // Temporary, will be updated during registration
+                FullName = invitation.Email.Split('@')[0], 
                 PasswordHash = passwordHash,
                 Department = invitation.Department,
                 Role = invitation.Role,
@@ -138,18 +136,35 @@ namespace ProjectM.Services
             await _context.SaveChangesAsync();
 
             // Deserialize permissions and create user permissions
-            var permissions = JsonSerializer.Deserialize<List<string>>(invitation.PermissionsJson) ?? new List<string>();
-            
-            foreach (var permission in permissions)
+            var permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(invitation.PermissionsJson);
+
+            // Map legacy keys -> canonical permission codes (defensive)
+            var legacyMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                var userPermission = new UserPermission
+                ["InviteUsers"] = "invites.manage",
+                ["ManageUsers"] = "users.manage",
+                ["ViewProjects"] = "projects.read",
+                ["CreateProjects"] = "projects.write",
+                ["EditProjects"] = "projects.write",
+                ["DeleteProjects"] = "projects.write",
+                ["AssignTasks"] = "tasks.write",
+                ["ViewAnalytics"] = "analytics.read"
+            };
+
+            if (permissions != null)
+            {
+                foreach (var permission in permissions)
                 {
-                    Id = Guid.NewGuid(),
-                    UserId = user.Id,
-                    PermissionKey = permission,
-                    IsGranted = true
-                };
-                _context.UserPermissions.Add(userPermission);
+                    var key = legacyMap.TryGetValue(permission.Key, out var mapped) ? mapped : permission.Key;
+                    var userPermission = new UserPermission
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = user.Id,
+                        PermissionKey = key,
+                        IsGranted = permission.Value
+                    };
+                    _context.UserPermissions.Add(userPermission);
+                }
             }
 
             // Mark invitation as used

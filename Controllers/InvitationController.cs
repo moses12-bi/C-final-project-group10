@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using ProjectM.Services;
 using ProjectM.DTOs;
 using ProjectM.Models;
@@ -28,7 +29,8 @@ namespace ProjectM.Controllers
         }
 
         [HttpPost]
-        [RequirePermission("InviteUsers")]
+        [Authorize]
+        [RequirePermission("invites.manage")]
         public async Task<ActionResult<InvitationResponse>> CreateInvitation([FromBody] CreateInvitationRequest request)
         {
             try
@@ -55,14 +57,14 @@ namespace ProjectM.Controllers
                     Email = invitation.Email,
                     Role = invitation.Role,
                     Department = invitation.Department,
-                    Permissions = JsonSerializer.Deserialize<List<string>>(invitation.PermissionsJson) ?? new List<string>(),
+                    Permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(invitation.PermissionsJson) ?? new Dictionary<string, bool>(),
                     Status = invitation.Status,
                     ExpiresAt = invitation.ExpiresAt,
                     CreatedAt = invitation.CreatedAt,
                     InvitedByUserName = inviter?.FullName ?? "Unknown"
                 };
 
-                return CreatedAtAction(nameof(GetInvitation), new { token = invitation.Token }, response);
+                return CreatedAtAction(nameof(GetInvitation), new { token = invitation.InvitationId }, response);
             }
             catch (UnauthorizedAccessException ex)
             {
@@ -78,13 +80,51 @@ namespace ProjectM.Controllers
             }
         }
 
+        [HttpGet]
+        [Authorize]
+        [RequirePermission("invites.manage")]
+        public async Task<ActionResult<IEnumerable<InvitationResponse>>> ListPendingInvitations()
+        {
+            var invitations = await _context.Invitations
+                .AsNoTracking()
+                .Where(i => i.Status == InvitationStatus.Pending)
+                .OrderByDescending(i => i.CreatedAt)
+                .ToListAsync();
+
+            var inviterIds = invitations.Select(i => i.InvitedByUserId).Distinct().ToList();
+            var inviters = await _context.Users
+                .AsNoTracking()
+                .Where(u => inviterIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, u => u.FullName);
+
+            var result = invitations.Select(inv => new InvitationResponse
+            {
+                InvitationId = inv.InvitationId,
+                Email = inv.Email,
+                Role = inv.Role,
+                Department = inv.Department,
+                Permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(inv.PermissionsJson) ?? new Dictionary<string, bool>(),
+                Status = inv.Status,
+                ExpiresAt = inv.ExpiresAt,
+                CreatedAt = inv.CreatedAt,
+                InvitedByUserName = inviters.TryGetValue(inv.InvitedByUserId, out var name) ? name : "Unknown"
+            }).ToList();
+
+            return Ok(result);
+        }
+
         [HttpGet("{token}")]
         [AllowAnonymous]
         public async Task<ActionResult<InvitationResponse>> GetInvitation(string token)
         {
             try
             {
-                var invitation = await _invitationService.ValidateInvitationAsync(token);
+                if (!Guid.TryParse(token, out Guid tokenGuid))
+                {
+                    return BadRequest("Invalid token format.");
+                }
+
+                var invitation = await _invitationService.ValidateInvitationAsync(tokenGuid);
                 if (invitation == null)
                 {
                     return NotFound("Invalid or expired invitation token.");
@@ -98,7 +138,7 @@ namespace ProjectM.Controllers
                     Email = invitation.Email,
                     Role = invitation.Role,
                     Department = invitation.Department,
-                    Permissions = JsonSerializer.Deserialize<List<string>>(invitation.PermissionsJson) ?? new List<string>(),
+                    Permissions = JsonSerializer.Deserialize<Dictionary<string, bool>>(invitation.PermissionsJson) ?? new Dictionary<string, bool>(),
                     Status = invitation.Status,
                     ExpiresAt = invitation.ExpiresAt,
                     CreatedAt = invitation.CreatedAt,
@@ -107,7 +147,7 @@ namespace ProjectM.Controllers
 
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "An error occurred while validating the invitation.");
             }

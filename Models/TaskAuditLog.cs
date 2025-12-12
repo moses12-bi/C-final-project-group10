@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int TaskId { get; set; }
-        public int UserID { get; set; }
+        public Guid UserID { get; set; }
         public string Action { get; set; } = string.Empty;
         public string Details { get; set; } = string.Empty;
         public string ChangeJson { get; set; } = string.Empty;

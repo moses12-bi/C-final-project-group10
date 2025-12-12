@@ -20,12 +20,11 @@ namespace ProjectM.Services
                                up.IsGranted);
         }
 
-        public async Task<List<string>> GetUserPermissionsAsync(Guid userId)
+        public async Task<Dictionary<string, bool>> GetUserPermissionsAsync(Guid userId)
         {
             return await _context.UserPermissions
-                .Where(up => up.UserId == userId && up.IsGranted)
-                .Select(up => up.PermissionKey)
-                .ToListAsync();
+                .Where(up => up.UserId == userId)
+                .ToDictionaryAsync(up => up.PermissionKey, up => up.IsGranted);
         }
     }
 }
