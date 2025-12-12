@@ -259,16 +259,25 @@ namespace ProjectM.Data
             });
 
             // Seed initial permission codes (ids fixed for HasData)
-            modelBuilder.Entity<Permission>().HasData(new Permission { Id = 1, Code = "users.manage", Description = "Manage users and permissions" },
-                                                    new Permission { Id = 2, Code = "invites.manage", Description = "Create and manage invitations" },
-                                                    new Permission { Id = 3, Code = "projects.read", Description = "Read projects" },
-                                                    new Permission { Id = 4, Code = "projects.write", Description = "Create or modify projects" },
-                                                    new Permission { Id = 5, Code = "tasks.read", Description = "Read tasks" },
-                                                    new Permission { Id = 6, Code = "tasks.write", Description = "Create or modify tasks" },
-                                                    new Permission { Id = 7, Code = "analytics.read", Description = "Read analytics and reports" },
-                                                    new Permission { Id = 8, Code = "calendar.read", Description = "Read calendar events" },
-                                                    new Permission { Id = 9, Code = "calendar.write", Description = "Write calendar events" },
-                                                    new Permission { Id = 10, Code = "notifications.read", Description = "Read notifications" });
+            modelBuilder.Entity<Permission>().HasData(
+                new Permission { Id = 1, Code = "users.manage", Description = "Manage users and permissions" },
+                new Permission { Id = 2, Code = "invites.manage", Description = "Create and manage invitations" },
+                new Permission { Id = 3, Code = "projects.read", Description = "Read projects" },
+                new Permission { Id = 4, Code = "projects.write", Description = "Create or modify projects" },
+                new Permission { Id = 5, Code = "tasks.read", Description = "Read tasks" },
+                new Permission { Id = 6, Code = "tasks.write", Description = "Create or modify tasks" },
+                new Permission { Id = 7, Code = "analytics.read", Description = "Read analytics and reports" },
+                new Permission { Id = 8, Code = "analytics.write", Description = "Create or modify analytics and reports" },
+                new Permission { Id = 9, Code = "calendar.read", Description = "Read calendar events" },
+                new Permission { Id = 10, Code = "calendar.write", Description = "Write calendar events" },
+                new Permission { Id = 11, Code = "notifications.read", Description = "Read notifications" },
+                new Permission { Id = 12, Code = "notifications.write", Description = "Create or modify notifications" },
+                new Permission { Id = 13, Code = "files.read", Description = "Read files" },
+                new Permission { Id = 14, Code = "files.write", Description = "Upload or modify files" }
+            );
+
+            // NOTE: EnsureCreated() will NOT apply updated HasData changes to an existing DB.
+            // For dev, you may need to drop/recreate the DB or switch to migrations (Database.Migrate()).
         }
     }
 }

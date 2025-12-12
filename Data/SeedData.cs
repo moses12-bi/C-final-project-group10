@@ -16,8 +16,10 @@ namespace ProjectM.Data
 
         public void EnsureSeedData()
         {
+            // If users already exist, still run a one-time permission key migration (legacy -> canonical).
             if (_context.Users.Any())
             {
+                EnsurePermissionKeyMigration();
                 return;
             }
 
@@ -55,6 +57,67 @@ namespace ProjectM.Data
             };
 
             _context.Users.AddRange(manager, lead, member);
+            _context.SaveChanges();
+
+            // Seed initial permissions (permission-based, not role-based enforcement)
+            // These should match Permission.Code values.
+            var rolePermissions = new Dictionary<string, List<string>>
+            {
+                ["Manager"] = new List<string>
+                {
+                    "users.manage",
+                    "invites.manage",
+                    "projects.read",
+                    "projects.write",
+                    "tasks.read",
+                    "tasks.write",
+                    "analytics.read",
+                    "analytics.write",
+                    "calendar.read",
+                    "calendar.write",
+                    "notifications.read",
+                    "notifications.write",
+                    "files.read",
+                    "files.write"
+                },
+                ["TeamLeader"] = new List<string>
+                {
+                    "projects.read",
+                    "projects.write",
+                    "tasks.read",
+                    "tasks.write",
+                    "analytics.read",
+                    "calendar.read",
+                    "notifications.read",
+                    "files.read"
+                },
+                ["Employee"] = new List<string>
+                {
+                    "projects.read",
+                    "tasks.read",
+                    "analytics.read",
+                    "calendar.read",
+                    "notifications.read",
+                    "files.read"
+                }
+            };
+
+            foreach (var user in new[] { manager, lead, member })
+            {
+                if (rolePermissions.TryGetValue(user.Role, out var permissions))
+                {
+                    foreach (var permission in permissions)
+                    {
+                        _context.UserPermissions.Add(new UserPermission
+                        {
+                            Id = Guid.NewGuid(),
+                            UserId = user.Id,
+                            PermissionKey = permission,
+                            IsGranted = true
+                        });
+                    }
+                }
+            }
             _context.SaveChanges();
 
             var project = new Project
@@ -98,6 +161,49 @@ namespace ProjectM.Data
                 new ProjectTeammember { ProjectId = project.Id, UserId = lead.Id },
                 new ProjectTeammember { ProjectId = project.Id, UserId = member.Id }
             );
+
+            _context.SaveChanges();
+        }
+
+        private void EnsurePermissionKeyMigration()
+        {
+            // Maps legacy permission keys used earlier in the project to the canonical Permission.Code values.
+            var legacyMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["InviteUsers"] = "invites.manage",
+                ["ManageUsers"] = "users.manage",
+                ["ViewProjects"] = "projects.read",
+                ["CreateProjects"] = "projects.write",
+                ["EditProjects"] = "projects.write",
+                ["DeleteProjects"] = "projects.write",
+                ["AssignTasks"] = "tasks.write",
+                ["ViewAnalytics"] = "analytics.read"
+            };
+
+            var legacy = _context.UserPermissions
+                .Where(up => legacyMap.Keys.Contains(up.PermissionKey))
+                .ToList();
+
+            if (legacy.Count == 0)
+            {
+                return;
+            }
+
+            foreach (var up in legacy)
+            {
+                var newKey = legacyMap[up.PermissionKey];
+                var alreadyExists = _context.UserPermissions.Any(x => x.UserId == up.UserId && x.PermissionKey == newKey);
+                if (!alreadyExists)
+                {
+                    _context.UserPermissions.Add(new UserPermission
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = up.UserId,
+                        PermissionKey = newKey,
+                        IsGranted = up.IsGranted
+                    });
+                }
+            }
 
             _context.SaveChanges();
         }

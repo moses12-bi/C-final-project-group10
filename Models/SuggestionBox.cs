@@ -11,7 +11,7 @@
         public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
         public int GeneratedForProjectId { get; set; }
         public int? GeneratedForTaskId { get; set; }
-        public int GeneratedByUserId { get; set; }
+        public Guid GeneratedByUserId { get; set; }
         //navigation properties
 
         public Project? GeneratedForProject { get; set; }

@@ -3,7 +3,7 @@
     public class PerformanceMetric
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public Guid UserId { get; set; }
         public DateTime MeasuredDate { get; set; }
         public int TasksCompleted { get; set; }
         public int TasksOnTime { get; set; }

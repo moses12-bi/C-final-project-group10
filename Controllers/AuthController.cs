@@ -51,7 +51,8 @@ namespace ProjectM.Controllers
                 var permissions = await _permissionService.GetUserPermissionsAsync(user.Id);
 
                 // Generate JWT token
-                var token = _jwtService.GenerateToken(user, permissions);
+                var grantedPermissions = permissions.Where(p => p.Value).Select(p => p.Key).ToList();
+                var token = _jwtService.GenerateToken(user, permissions.Where(p => p.Value).Select(p => p.Key).ToList());
 
                 var response = new AuthResponse
                 {
@@ -62,7 +63,7 @@ namespace ProjectM.Controllers
 
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "An error occurred while completing registration.");
             }
@@ -89,7 +90,7 @@ namespace ProjectM.Controllers
                 }
 
                 var permissions = await _permissionService.GetUserPermissionsAsync(user.Id);
-                var token = _jwtService.GenerateToken(user, permissions);
+                var token = _jwtService.GenerateToken(user, permissions.Where(p => p.Value).Select(p => p.Key).ToList());
 
                 var response = new AuthResponse
                 {
@@ -155,6 +156,85 @@ namespace ProjectM.Controllers
             }
             return null;
         }
+// [POST] Register (Public)
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<ActionResult<AuthResponse>> Register([FromBody] RegisterRequest request)
+        {
+            try
+            {
+                if (await _context.Users.AnyAsync(u => u.Email == request.Email))
+                {
+                    return BadRequest("Email already registered.");
+                }
+
+                var passwordHasher = new PasswordHasher();
+                var passwordHash = passwordHasher.HashPassword(request.Password);
+
+                var user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Email = request.Email,
+                    FullName = request.FullName,
+                    PasswordHash = passwordHash,
+                    Role = "Manager", // Default role for self-registration
+                    Department = "General", // Default department
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                _context.Users.Add(user);
+                
+                // For the first user or public registration, we might want to give basic permissions
+                // Or if it's the "Manager" role, give them invite permissions
+                var defaultPermissions = new List<string>
+                {
+                    "users.manage",
+                    "invites.manage",
+                    "projects.read",
+                    "projects.write",
+                    "tasks.read",
+                    "tasks.write",
+                    "analytics.read",
+                    "analytics.write",
+                    "calendar.read",
+                    "calendar.write",
+                    "notifications.read",
+                    "notifications.write",
+                    "files.read",
+                    "files.write"
+                };
+
+                foreach (var perm in defaultPermissions)
+                {
+                    _context.UserPermissions.Add(new UserPermission
+                    {
+                        Id = Guid.NewGuid(),
+                        UserId = user.Id,
+                        PermissionKey = perm,
+                        IsGranted = true
+                    });
+                }
+
+                await _context.SaveChangesAsync();
+
+                // Login the user immediately
+                var permissions = await _permissionService.GetUserPermissionsAsync(user.Id);
+                var token = _jwtService.GenerateToken(user, permissions.Where(p => p.Value).Select(p => p.Key).ToList());
+
+                return Ok(new AuthResponse
+                {
+                    Token = token,
+                    User = user,
+                    Permissions = permissions
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Registration Error: {ex}");
+                return StatusCode(500, $"An error occurred during registration: {ex.Message} {ex.InnerException?.Message}");
+            }
+        }
     }
 
     public class LoginRequest
@@ -164,6 +244,20 @@ namespace ProjectM.Controllers
         public string Email { get; set; } = string.Empty;
 
         [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+
+    public class RegisterRequest
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(6)]
         public string Password { get; set; } = string.Empty;
     }
 }
