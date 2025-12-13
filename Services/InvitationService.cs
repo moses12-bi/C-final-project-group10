@@ -70,7 +70,9 @@ namespace ProjectM.Services
             await _context.SaveChangesAsync();
 
             // Send email using InvitationId as token
-            _ = Task.Run(() => _emailService.SendInvitationEmailAsync(email, invitation.InvitationId.ToString()));
+            // We await this now because SmtpEmailService catches exceptions, so it won't crash the request
+            // And awaiting prevents the "Scoped service disposed" race condition
+            await _emailService.SendInvitationEmailAsync(email, invitation.InvitationId.ToString());
 
             return invitation;
         }
