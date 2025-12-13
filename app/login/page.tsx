@@ -50,30 +50,30 @@ function LoginForm() {
     };
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
-            <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-lg ring-1 ring-slate-900/5">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-dark-950 p-4">
+            <div className="w-full max-w-md space-y-8 rounded-xl bg-dark-900 p-8 shadow-xl ring-1 ring-dark-800 border border-dark-800">
                 <div className="text-center">
-                    <h1 className="text-3xl font-bold tracking-tight text-slate-900">ProjectM</h1>
-                    <p className="mt-2 text-sm text-slate-600">
+                    <h1 className="text-3xl font-bold tracking-tight text-white">ProjectM</h1>
+                    <p className="mt-2 text-sm text-slate-400">
                         Sign in to your account
                     </p>
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                     {justRegistered && (
-                        <div className="rounded-md bg-green-50 p-3 text-sm text-green-600 ring-1 ring-green-200">
+                        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-400 ring-1 ring-green-500/20">
                             ✓ Registration successful! Please sign in with your new account.
                         </div>
                     )}
                     {error && (
-                        <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 ring-1 ring-red-200">
+                        <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400 ring-1 ring-red-500/20">
                             {error}
                         </div>
                     )}
 
                     <div className="space-y-4">
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                            <label htmlFor="email" className="block text-sm font-medium text-slate-300">
                                 Email address
                             </label>
                             <div className="mt-1">
@@ -93,7 +93,7 @@ function LoginForm() {
                         </div>
 
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                            <label htmlFor="password" className="block text-sm font-medium text-slate-300">
                                 Password
                             </label>
                             <div className="mt-1">
@@ -116,7 +116,7 @@ function LoginForm() {
                     <div>
                         <Button
                             type="submit"
-                            className="w-full"
+                            className="w-full shadow-lg shadow-primary-500/20"
                             isLoading={isLoading}
                         >
                             Sign in
@@ -125,7 +125,7 @@ function LoginForm() {
 
                     <div className="text-center text-sm">
                         <span className="text-slate-500">Don&apos;t have an account? </span>
-                        <Link href="/register" className="font-semibold text-slate-900 hover:text-slate-700">
+                        <Link href="/register" className="font-semibold text-primary-400 hover:text-primary-300">
                             Complete Invitation
                         </Link>
                     </div>
