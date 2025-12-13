@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, UserPlus } from 'lucide-react';
 import Link from 'next/link';
-import api from '../../services/api';
+import api from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -69,19 +69,17 @@ function RegisterForm() {
                 });
             }
 
-            if (response.data && response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                if (response.data.user) {
-                    localStorage.setItem('user', JSON.stringify(response.data.user));
-                }
-                if (response.data.permissions) {
-                    localStorage.setItem('permissions', JSON.stringify(response.data.permissions));
-                }
-                router.push('/dashboard');
+            // Registration successful - redirect to login page
+            if (response.data) {
+                router.push('/login?registered=true');
             }
-        } catch (err: unknown) {
-            const maybe = err as { response?: { data?: unknown } };
-            setError(typeof maybe.response?.data === 'string' ? (maybe.response?.data as string) : 'Registration failed');
+        } catch (err: any) {
+            console.error('Registration error:', err);
+            const errorMessage = err.response?.data?.message
+                || err.response?.data
+                || err.message
+                || 'Registration failed. Please try again.';
+            setError(typeof errorMessage === 'string' ? errorMessage : JSON.stringify(errorMessage));
         } finally {
             setIsLoading(false);
         }
@@ -110,13 +108,13 @@ function RegisterForm() {
                     {isInviteMode ? 'Complete Setup' : 'Create Account'}
                 </h1>
                 <p className="mt-2 text-sm text-slate-600">
-                    {isInviteMode ? (
+                    {isInviteMode && inviteData ? (
                         <>Welcome, <strong>{inviteData.email}</strong>!</>
                     ) : (
                         'Get started with ProjectM'
                     )}
                 </p>
-                {isInviteMode && (
+                {isInviteMode && inviteData && (
                     <div className="mt-2 flex items-center justify-center gap-2 text-xs text-slate-500">
                         <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-blue-700 ring-1 ring-inset ring-blue-700/10">{inviteData.department}</span>
                         <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-1 text-indigo-700 ring-1 ring-inset ring-indigo-700/10">{inviteData.role}</span>
