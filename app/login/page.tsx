@@ -1,14 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import api from '../../services/api';
+import { useRouter, useSearchParams } from 'next/navigation';
+import api from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-export default function LoginPage() {
+function LoginForm() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const justRegistered = searchParams.get('registered') === 'true';
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -57,6 +60,11 @@ export default function LoginPage() {
                 </div>
 
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {justRegistered && (
+                        <div className="rounded-md bg-green-50 p-3 text-sm text-green-600 ring-1 ring-green-200">
+                            ✓ Registration successful! Please sign in with your new account.
+                        </div>
+                    )}
                     {error && (
                         <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 ring-1 ring-red-200">
                             {error}
@@ -124,5 +132,13 @@ export default function LoginPage() {
                 </form>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginForm />
+        </Suspense>
     );
 }
