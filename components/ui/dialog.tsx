@@ -17,12 +17,12 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
                 onClick={() => onOpenChange(false)}
             />
 
             {/* Dialog */}
-            <div className="relative z-50 w-full max-w-lg mx-4">
+            <div className="relative z-50 w-full max-w-lg mx-4 animate-scale-up">
                 {children}
             </div>
         </div>
@@ -31,7 +31,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 export function DialogContent({ children }: { children: React.ReactNode }) {
     return (
-        <div className="relative bg-white rounded-lg shadow-lg">
+        <div className="relative bg-dark-900 rounded-lg shadow-2xl ring-1 ring-dark-800 border border-dark-800">
             {children}
         </div>
     );
@@ -39,7 +39,7 @@ export function DialogContent({ children }: { children: React.ReactNode }) {
 
 export function DialogHeader({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex items-center justify-between border-b border-slate-200 p-6 pb-4">
+        <div className="flex items-center justify-between border-b border-dark-800 p-6 pb-4">
             {children}
         </div>
     );
@@ -47,7 +47,7 @@ export function DialogHeader({ children }: { children: React.ReactNode }) {
 
 export function DialogTitle({ children }: { children: React.ReactNode }) {
     return (
-        <h2 className="text-lg font-semibold text-slate-900">
+        <h2 className="text-lg font-semibold text-white">
             {children}
         </h2>
     );
@@ -57,7 +57,7 @@ export function DialogClose({ onClose }: { onClose: () => void }) {
     return (
         <button
             onClick={onClose}
-            className="rounded-sm opacity-70 ring-offset-white transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-slate-950 focus:ring-offset-2"
+            className="rounded-sm opacity-70 ring-offset-dark-950 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 text-slate-400 hover:text-white"
         >
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
@@ -75,7 +75,7 @@ export function DialogBody({ children }: { children: React.ReactNode }) {
 
 export function DialogFooter({ children }: { children: React.ReactNode }) {
     return (
-        <div className="flex items-center justify-end gap-3 border-t border-slate-200 p-6 pt-4">
+        <div className="flex items-center justify-end gap-3 border-t border-dark-800 p-6 pt-4">
             {children}
         </div>
     );
@@ -113,10 +113,10 @@ export function AlertDialog({
                     <DialogClose onClose={() => onOpenChange(false)} />
                 </DialogHeader>
                 <DialogBody>
-                    <p className="text-sm text-slate-600">{description}</p>
+                    <p className="text-sm text-slate-300">{description}</p>
                 </DialogBody>
                 <DialogFooter>
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} className="border-dark-700 bg-dark-900 text-slate-200 hover:bg-dark-800">
                         {cancelText}
                     </Button>
                     <Button
