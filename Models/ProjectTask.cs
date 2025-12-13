@@ -21,6 +21,7 @@
         public ICollection<ProjectTask> SubTasks { get; set; } = new List<ProjectTask>();
         public ICollection<TaskAssignment> Assignments { get; set; } = new List<TaskAssignment>();
         public ICollection<TaskDependency> Dependencies { get; set; } = new List<TaskDependency>();
+        public ICollection<TaskDependency> DependentOnTasks { get; set; } = new List<TaskDependency>();
         public ICollection<TaskComment> Comments { get; set; } = new List<TaskComment>();
         public ICollection<TaskAttachment> Attachments { get; set; } = new List<TaskAttachment>();
         public ICollection<TaskAuditLog> AuditLogs { get; set; } = new List<TaskAuditLog>();

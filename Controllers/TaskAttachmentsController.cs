@@ -47,7 +47,7 @@ namespace ProjectM.Controllers
             }
 
             var attachments = await _context.TaskAttachments
-                .Include(a => a.User)
+                .Include(a => a.UploadedBy)
                 .Where(a => a.TaskId == taskId)
                 .Select(a => new
                 {
@@ -57,7 +57,7 @@ namespace ProjectM.Controllers
                     a.FileSize,
                     a.ContentType,
                     a.UploadedAt,
-                    UploadedBy = a.User.FullName
+                    UploadedBy = a.UploadedBy!.FullName
                 })
                 .ToListAsync();
 
@@ -105,7 +105,7 @@ namespace ProjectM.Controllers
                 FilePath = filePath,
                 FileSize = file.Length,
                 ContentType = file.ContentType,
-                UploadedBy = userId,
+                UploadedById = userId,
                 UploadedAt = DateTime.UtcNow
             };
 

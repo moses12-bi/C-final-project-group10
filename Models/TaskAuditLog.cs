@@ -9,9 +9,10 @@
         public string Details { get; set; } = string.Empty;
         public string ChangeJson { get; set; } = string.Empty;
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get => Timestamp; set => Timestamp = value; }
         //navigation properties
 
-        public  ProjectTask? Task { get; set; }
+        public ProjectTask? Task { get; set; }
         public User? User { get; set; }
 
     }

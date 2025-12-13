@@ -32,7 +32,7 @@ namespace ProjectM.Controllers
                 {
                     s.Id,
                     s.SkillName,
-                    s.ProficiencyLevel
+                    s.Level
                 })
                 .ToListAsync();
 
@@ -52,7 +52,7 @@ namespace ProjectM.Controllers
             {
                 UserId = Guid.Parse(userId),
                 SkillName = dto.SkillName,
-                ProficiencyLevel = dto.ProficiencyLevel
+                Level = dto.Level
             };
 
             _context.UserSkills.Add(skill);
@@ -62,7 +62,7 @@ namespace ProjectM.Controllers
             {
                 skill.Id,
                 skill.SkillName,
-                skill.ProficiencyLevel
+                skill.Level
             });
         }
 
@@ -93,6 +93,6 @@ namespace ProjectM.Controllers
     public class AddSkillDto
     {
         public string SkillName { get; set; } = string.Empty;
-        public string ProficiencyLevel { get; set; } = "Beginner";
+        public Models.SkillLevel Level { get; set; } = Models.SkillLevel.Beginner;
     }
 }

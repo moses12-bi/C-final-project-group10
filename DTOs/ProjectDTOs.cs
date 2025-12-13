@@ -24,8 +24,7 @@ namespace ProjectM.DTOs
         [Required]
         public DateTime EndDate { get; set; }
 
-        [Required]
-        public Guid ManagerId { get; set; }
+        public Guid? ManagerId { get; set; }
 
         public Guid? TeamLeadId { get; set; }
     }

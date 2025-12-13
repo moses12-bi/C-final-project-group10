@@ -14,6 +14,8 @@
         // Related entity tracking
         public int? RelatedTaskId { get; set; }
         public int? RelatedProjectId { get; set; }
+        public int? RelatedEntityId { get; set; }
+        public string? RelatedEntityType { get; set; }
 
         // Navigation properties
         public User? User { get; set; }

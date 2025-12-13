@@ -116,8 +116,8 @@ namespace ProjectM.Controllers
                     Priority = g.Key.ToString(),
                     Count = g.Count()
                 }),
-                AverageEstimatedHours = tasks.Average(t => (double)t.EstimatedHours),
-                AverageActualHours = tasks.Where(t => t.ActualHours.HasValue).Average(t => (double)t.ActualHours.Value),
+                AverageEstimatedHours = tasks.Any() ? tasks.Average(t => (double)t.EstimatedHours) : 0,
+                AverageActualHours = tasks.Any(t => t.ActualHours.HasValue) ? tasks.Where(t => t.ActualHours.HasValue).Average(t => (double)t.ActualHours.Value) : 0,
                 OverdueTasks = tasks.Count(t => t.Deadline < DateTime.UtcNow && t.Status != Models.TaskStatus.Done),
                 CompletionRate = tasks.Count > 0 ? (tasks.Count(t => t.Status == Models.TaskStatus.Done) * 100.0 / tasks.Count) : 0
             };

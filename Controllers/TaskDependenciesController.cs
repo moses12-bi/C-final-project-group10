@@ -24,7 +24,7 @@ namespace ProjectM.Controllers
         {
             var task = await _context.ProjectTasks
                 .Include(t => t.DependentOnTasks)
-                .Include(t => t.DependentTasks)
+                .Include(t => t.DependentOnTasks)
                 .FirstOrDefaultAsync(t => t.Id == taskId);
 
             if (task == null)
@@ -39,7 +39,7 @@ namespace ProjectM.Controllers
                     d.DependsOnTaskId,
                     d.DependsOnTask.Title
                 }),
-                blocking = task.DependentTasks.Select(d => new
+                blocking = task.DependentOnTasks.Select(d => new
                 {
                     d.TaskId,
                     d.Task.Title
