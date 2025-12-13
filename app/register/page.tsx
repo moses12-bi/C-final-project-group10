@@ -102,29 +102,29 @@ function RegisterForm() {
     }
 
     return (
-        <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-8 shadow-lg ring-1 ring-slate-900/5">
+        <div className="w-full max-w-md space-y-8 rounded-xl bg-dark-900 p-8 shadow-xl ring-1 ring-dark-800 border border-dark-800">
             <div className="text-center">
-                <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+                <h1 className="text-3xl font-bold tracking-tight text-white">
                     {isInviteMode ? 'Complete Setup' : 'Create Account'}
                 </h1>
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-2 text-sm text-slate-400">
                     {isInviteMode && inviteData ? (
-                        <>Welcome, <strong>{inviteData.email}</strong>!</>
+                        <>Welcome, <strong className="text-slate-200">{inviteData.email}</strong>!</>
                     ) : (
                         'Get started with ProjectM'
                     )}
                 </p>
                 {isInviteMode && inviteData && (
                     <div className="mt-2 flex items-center justify-center gap-2 text-xs text-slate-500">
-                        <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-1 text-blue-700 ring-1 ring-inset ring-blue-700/10">{inviteData.department}</span>
-                        <span className="inline-flex items-center rounded-full bg-indigo-50 px-2 py-1 text-indigo-700 ring-1 ring-inset ring-indigo-700/10">{inviteData.role}</span>
+                        <span className="inline-flex items-center rounded-full bg-secondary-900/50 px-2 py-1 text-secondary-400 ring-1 ring-inset ring-secondary-500/20">{inviteData.department}</span>
+                        <span className="inline-flex items-center rounded-full bg-primary-900/50 px-2 py-1 text-primary-400 ring-1 ring-inset ring-primary-500/20">{inviteData.role}</span>
                     </div>
                 )}
             </div>
 
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
                 {error && (
-                    <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 ring-1 ring-red-200">
+                    <div className="rounded-md bg-red-500/10 p-3 text-sm text-red-400 ring-1 ring-red-500/20">
                         {error}
                     </div>
                 )}
@@ -132,7 +132,7 @@ function RegisterForm() {
                 <div className="space-y-4">
                     {!isInviteMode && (
                         <div>
-                            <label className="block text-sm font-medium text-slate-700">Email Address</label>
+                            <label className="block text-sm font-medium text-slate-300">Email Address</label>
                             <Input
                                 type="email"
                                 required
@@ -144,7 +144,7 @@ function RegisterForm() {
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700">Full Name</label>
+                        <label className="block text-sm font-medium text-slate-300">Full Name</label>
                         <Input
                             required
                             value={fullName}
@@ -154,7 +154,7 @@ function RegisterForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700">Password</label>
+                        <label className="block text-sm font-medium text-slate-300">Password</label>
                         <Input
                             type="password"
                             required
@@ -165,7 +165,7 @@ function RegisterForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-slate-700">Confirm Password</label>
+                        <label className="block text-sm font-medium text-slate-300">Confirm Password</label>
                         <Input
                             type="password"
                             required
@@ -176,7 +176,7 @@ function RegisterForm() {
                     </div>
                 </div>
 
-                <Button type="submit" className="w-full" isLoading={isLoading}>
+                <Button type="submit" className="w-full shadow-lg shadow-primary-500/20" isLoading={isLoading}>
                     {isInviteMode ? <CheckCircle2 className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
                     {isInviteMode ? 'Complete Registration' : 'Create Account'}
                 </Button>
@@ -184,7 +184,7 @@ function RegisterForm() {
                 {!isInviteMode && (
                     <div className="text-center text-sm">
                         <span className="text-slate-500">Already have an account? </span>
-                        <Link href="/login" className="font-semibold text-slate-900 hover:text-slate-700">
+                        <Link href="/login" className="font-semibold text-primary-400 hover:text-primary-300">
                             Sign in
                         </Link>
                     </div>
@@ -196,7 +196,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-slate-50 p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-dark-950 p-4">
             <Suspense fallback={<div>Loading...</div>}>
                 <RegisterForm />
             </Suspense>
