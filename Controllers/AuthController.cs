@@ -235,6 +235,7 @@ namespace ProjectM.Controllers
                 return StatusCode(500, $"An error occurred during registration: {ex.Message} {ex.InnerException?.Message}");
             }
         }
+
     }
 
     public class LoginRequest
@@ -260,4 +261,5 @@ namespace ProjectM.Controllers
         [MinLength(6)]
         public string Password { get; set; } = string.Empty;
     }
+
 }
