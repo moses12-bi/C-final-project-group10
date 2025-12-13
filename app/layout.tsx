@@ -1,14 +1,7 @@
 'use client';
 
-import { useEffect } from 'react';
-import { ThemeProvider } from '@/contexts/theme-context';
-import { useAppKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts';
 import './globals.css';
-
-function KeyboardShortcutsWrapper({ children }: { children: React.ReactNode }) {
-  useAppKeyboardShortcuts();
-  return <>{children}</>;
-}
+import { ThemeProvider } from '@/contexts/theme-context';
 
 export default function RootLayout({
   children,
@@ -19,9 +12,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body>
         <ThemeProvider>
-          <KeyboardShortcutsWrapper>
-            {children}
-          </KeyboardShortcutsWrapper>
+          {children}
         </ThemeProvider>
       </body>
     </html>
