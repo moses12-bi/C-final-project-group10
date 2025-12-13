@@ -10,6 +10,7 @@
         public string Role { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? AvatarUrl { get; set; }
 
         // Navigation properties for permissions & auth
         public ICollection<UserPermission> UserPermissions { get; set; } = new List<UserPermission>();

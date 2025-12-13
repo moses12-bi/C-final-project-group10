@@ -61,8 +61,14 @@ namespace ProjectM.Controllers
                 return BadRequest(ModelState);
             }
 
+            // Get current user ID
+            var currentUserId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException());
+
+            // Use provided ManagerId or default to current user
+            var managerId = dto.ManagerId ?? currentUserId;
+
             // Validate manager exists
-            var manager = await _users.GetByIdAsync(dto.ManagerId);
+            var manager = await _users.GetByIdAsync(managerId);
             if (manager == null)
             {
                 return BadRequest(new { message = "Manager not found" });
@@ -92,7 +98,7 @@ namespace ProjectM.Controllers
                 Status = dto.Status,
                 StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
-                ManagerId = dto.ManagerId,
+                ManagerId = managerId,
                 TeamLeadId = dto.TeamLeadId,
                 CreatedAt = DateTime.UtcNow
             };

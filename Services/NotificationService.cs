@@ -30,7 +30,7 @@ namespace ProjectM.Services
             var notification = new Notification
             {
                 UserId = userId,
-                Type = type,
+                Type = Enum.TryParse<NotificationType>(type, out var notifType) ? notifType : NotificationType.SystemAlert,
                 Title = title,
                 Message = message,
                 RelatedEntityId = relatedEntityId,

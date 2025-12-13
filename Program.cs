@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
@@ -74,7 +75,12 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("Initializing Database...");
         var context = services.GetRequiredService<ApplicationDbContext>();
         
+        // Force fresh database creation
+        Console.WriteLine("Deleting existing database...");
+        context.Database.EnsureDeleted();
+        
         // Detailed feedback on creation
+        Console.WriteLine("Creating database and tables...");
         bool created = context.Database.EnsureCreated(); 
         Console.WriteLine(created ? "Database was created successfully." : "Database already exists (Schema verification skipped).");
 
@@ -92,18 +98,25 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
-app.UseCors(options =>
-    options.WithOrigins("http://localhost:3000")
-           .AllowAnyMethod()
-           .AllowAnyHeader());
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// CORS must be configured BEFORE UseHttpsRedirection
+app.UseCors(options =>
+    options.WithOrigins("http://localhost:3000")
+           .AllowAnyMethod()
+           .AllowAnyHeader()
+           .AllowCredentials());
+
+// Only use HTTPS redirection in production (development uses HTTP)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

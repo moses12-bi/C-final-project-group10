@@ -35,8 +35,8 @@ namespace ProjectM.Controllers
                 {
                     l.Id,
                     l.Action,
-                    l.Changes,
-                    l.UserId,
+                    l.ChangeJson,
+                    l.UserID,
                     UserName = l.User.FullName,
                     l.CreatedAt
                 })
