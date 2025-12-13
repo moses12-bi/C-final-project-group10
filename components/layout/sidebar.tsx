@@ -48,19 +48,19 @@ export default function Sidebar() {
 
     return (
         <div
-            className={`flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'
+            className={`flex flex-col bg-dark-900 border-r border-dark-800 transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'
                 }`}
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-4 border-b border-dark-800">
                 {!collapsed && (
-                    <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-xl font-bold text-white">
                         ProjectM
                     </h1>
                 )}
                 <button
                     onClick={() => setCollapsed(!collapsed)}
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="p-2 rounded-lg hover:bg-dark-800 text-slate-400 hover:text-white"
                 >
                     {collapsed ? (
                         <ChevronRight className="w-5 h-5" />
@@ -81,8 +81,8 @@ export default function Sidebar() {
                             key={item.name}
                             href={item.href}
                             className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${isActive
-                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                                ? 'bg-primary-500/10 text-primary-400'
+                                : 'text-slate-400 hover:bg-dark-800 hover:text-slate-200'
                                 }`}
                             title={collapsed ? item.name : ''}
                         >
@@ -94,10 +94,10 @@ export default function Sidebar() {
             </nav>
 
             {/* User Section */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+            <div className="p-4 border-t border-dark-800 space-y-2">
                 <Link
                     href="/profile"
-                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2 rounded-lg text-slate-400 hover:bg-dark-800 hover:text-slate-200 transition-colors"
                     title={collapsed ? 'Profile' : ''}
                 >
                     <User className="w-5 h-5 flex-shrink-0" />
@@ -106,7 +106,7 @@ export default function Sidebar() {
 
                 <button
                     onClick={handleLogout}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                     title={collapsed ? 'Logout' : ''}
                 >
                     <LogOut className="w-5 h-5 flex-shrink-0" />
