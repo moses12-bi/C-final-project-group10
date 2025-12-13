@@ -66,7 +66,7 @@ builder.Services.AddScoped<IEmailService, SmtpEmailService>();
 
 var app = builder.Build();
 
-// Automatically create database and tables (Hibernate-like behavior)
+// Automatically create database and tables (Safe Mode)
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -75,14 +75,10 @@ using (var scope = app.Services.CreateScope())
         Console.WriteLine("Initializing Database...");
         var context = services.GetRequiredService<ApplicationDbContext>();
         
-        // Force fresh database creation
-        Console.WriteLine("Deleting existing database...");
-        context.Database.EnsureDeleted();
-        
-        // Detailed feedback on creation
-        Console.WriteLine("Creating database and tables...");
+        // Ensure database exists (Creates if not exists, DOES NOT DELETE)
+        Console.WriteLine("Ensuring database exists...");
         bool created = context.Database.EnsureCreated(); 
-        Console.WriteLine(created ? "Database was created successfully." : "Database already exists (Schema verification skipped).");
+        Console.WriteLine(created ? "Database was created successfully." : "Database already exists.");
 
         var seeder = services.GetRequiredService<SeedData>();
         seeder.EnsureSeedData();
